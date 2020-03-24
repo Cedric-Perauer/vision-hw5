@@ -11,14 +11,15 @@ def train(net, dataloader, optimizer, criterion, epoch):
 
     running_loss = 0.0
     total_loss = 0.0
-
+    net.cuda()
     for i, data in enumerate(dataloader.trainloader, 0):
         # get the inputs
         inputs, labels = data
-
+        labels = labels.cuda()
+        inputs = inputs.cuda()
         # zero the parameter gradients
         optimizer.zero_grad()
-
+     
         # forward + backward + optimize
         outputs = net(inputs)
         loss = criterion(outputs, labels)
@@ -40,6 +41,7 @@ def train(net, dataloader, optimizer, criterion, epoch):
 def test(net, dataloader, tag=''):
     correct = 0
     total = 0
+    net.cuda()
     if tag == 'Train':
         dataTestLoader = dataloader.trainloader
     else:
@@ -47,6 +49,8 @@ def test(net, dataloader, tag=''):
     with torch.no_grad():
         for data in dataTestLoader:
             images, labels = data
+            images = images.cuda()
+            labels = labels.cuda()
             outputs = net(images)
             _, predicted = torch.max(outputs.data, 1)
             total += labels.size(0)
@@ -60,6 +64,8 @@ def test(net, dataloader, tag=''):
     with torch.no_grad():
         for data in dataTestLoader:
             images, labels = data
+            images = images.cuda()
+            labels = labels.cuda()
             outputs = net(images)
             _, predicted = torch.max(outputs, 1)
             c = (predicted == labels).squeeze()
@@ -81,7 +87,7 @@ def main():
     net = args.model()
     print('The log is recorded in ')
     print(net.logFile.name)
-
+    net.cuda()
     criterion = net.criterion()
     optimizer = net.optimizer()
 
